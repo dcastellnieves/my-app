@@ -43,6 +43,24 @@ Para ejecutar la aplicación en un contenedor Docker:
 docker run --rm my-app:1.0
 ```
 
+### Usando Docker Compose
+
+Alternativamente, puedes usar Docker Compose para construir y ejecutar la aplicación:
+
+```bash
+# Construir el proyecto con Maven
+mvn clean package
+
+# Construir y ejecutar con Docker Compose
+docker compose up
+```
+
+Para reconstruir la imagen:
+
+```bash
+docker compose up --build
+```
+
 ## Tests
 
 Para ejecutar los tests del proyecto:

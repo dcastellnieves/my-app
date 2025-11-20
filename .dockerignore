@@ -27,9 +27,5 @@ Thumbs.db
 .git
 .gitignore
 
-# Docker
-Dockerfile
-.dockerignore
-
 # Documentation
 README.md

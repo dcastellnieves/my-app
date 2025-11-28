@@ -1,6 +1,6 @@
 # My App - Hello World Java Application
 
-Este es un proyecto Java Maven que demuestra una aplicación básica "Hello World".
+Este es un proyecto Java Maven que demuestra una aplicación muy básica "Hello World".
 
 ## Requisitos
 

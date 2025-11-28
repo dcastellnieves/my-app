@@ -1,12 +1,13 @@
 name: SonarCloud Analysis
+
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
       - develop
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_dispatch:   # 👈 habilita ejecución manual desde la interfaz de GitHub
 
 permissions:
   contents: read
@@ -41,4 +42,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-

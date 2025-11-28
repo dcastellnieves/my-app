@@ -1,5 +1,7 @@
 # My App - Hello World Java Application
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dcastellnieves_my-app&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dcastellnieves_my-app)
+
 Este es un proyecto Java Maven que demuestra una aplicación muy básica "Hello World".
 
 ## Requisitos

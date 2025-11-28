@@ -19,9 +19,6 @@
     <jacoco.version>0.8.11</jacoco.version>
 </properties>
 
-	  
-  </properties>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -199,4 +196,5 @@
     </pluginManagement>
   </build>
 </project>
+
 

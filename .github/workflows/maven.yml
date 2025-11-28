@@ -14,8 +14,12 @@ permissions:
 
 jobs:
   sonarcloud:
-    name: SonarCloud Analysis
+    name: SonarCloud Analysis (Java ${{ matrix.java }})
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        java: [11, 17, 21]
 
     steps:
       # 1. Checkout del código
@@ -23,17 +27,18 @@ jobs:
         with:
           fetch-depth: 0  # Necesario para el análisis completo
 
-      # 2. Configurar JDK
-      - name: Set up JDK 17
+      # 2. Configurar JDK según la versión del matrix
+      - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
+          java-version: ${{ matrix.java }}
           distribution: 'temurin'
           cache: maven
 
-      # 3. Ejecutar análisis con la acción oficial
+      # 3. Ejecutar análisis con la acción oficial de SonarCloud
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+

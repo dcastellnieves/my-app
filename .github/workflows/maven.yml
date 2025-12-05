@@ -1,4 +1,5 @@
-name: SonarCloud Analysis
+
+name: Maven and SonarCloud Analysis
 
 on:
   push:
@@ -7,11 +8,11 @@ on:
       - develop
   pull_request:
     types: [opened, synchronize, reopened]
-  workflow_dispatch:   # 👈 habilita ejecución manual desde la interfaz de GitHub
+  workflow_dispatch: {}  # habilita ejecución manual desde la interfaz
 
 permissions:
   contents: read
-  pull-requests: write   # Permite que SonarCloud comente en los PRs
+  pull-requests: write  # permite comentar/chequear en PR
 
 jobs:
   sonarcloud:
@@ -20,25 +21,42 @@ jobs:
 
     strategy:
       matrix:
-        java: [11, 17]
+        java: [11, 17, 21]
 
     steps:
-      # 1. Checkout del código
-      - uses: actions/checkout@v3
+      # 1) Checkout
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Necesario para el análisis completo
+          fetch-depth: 0   # recomendado por Sonar para análisis correcto
 
-      # 2. Configurar JDK según la versión del matrix
+      # 2) Configurar JDK según el matrix
       - name: Set up JDK ${{ matrix.java }}
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
           cache: maven
 
-      # 3. Ejecutar análisis con la acción oficial de SonarCloud
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
+      # 3) Cache de Sonar (acelera descargas del scanner/analyzers)
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      # 4) Compilar y analizar con Maven + SonarCloud
+      - name: Build and SonarCloud analysis
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # inyectado por GitHub
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}     # créalo en Settings → Secrets
+        run: |
+          mvn --batch-mode -V \
+              clean verify sonar:sonar \
+              -DskipTests=false \
+              -Dsonar.projectKey=dcastellnieves_my-app \
+              -Dsonar.organization=dcastellnieves \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.login=${SONAR_TOKEN} \
+              -Dsonar.qualitygate.wait=true
+

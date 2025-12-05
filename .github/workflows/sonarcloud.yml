@@ -1,3 +1,4 @@
+
 name: SonarCloud Analysis
 
 on:
@@ -7,6 +8,7 @@ on:
       - develop
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_dispatch: {}  # Permite lanzarlo manualmente desde la pestaña Actions
 
 permissions:
   contents: read
@@ -16,26 +18,26 @@ jobs:
   sonarcloud:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
-    
+
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Importante para el análisis de SonarCloud
-      
+          fetch-depth: 0  # Recomendado por Sonar para un análisis correcto
+
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      
+
       - name: Cache SonarCloud packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      
+
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

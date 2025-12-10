@@ -84,12 +84,6 @@
         </reportSets>
       </plugin>
 
-
-<plugin>
-  <groupId>com.github.spotbugs</groupId>
-  <artifactId>spotbugs-maven-plugin</artifactId>
-  <version>4.8.6</version>
-</plugin>
 	  
 	  <plugin>
 		
@@ -196,13 +190,19 @@
                 </execution>
             </executions>
         </plugin>	
-	
+
+<plugin>
+  <groupId>com.github.spotbugs</groupId>
+  <artifactId>spotbugs-maven-plugin</artifactId>
+  <version>4.8.6</version>
+</plugin>
 
       </plugins>
 	  
     </pluginManagement>
   </build>
 </project>
+
 
 
 

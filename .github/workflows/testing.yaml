@@ -57,11 +57,14 @@ jobs:
 
       # Publicar resumen de tests en el workflow y Checks del PR
       - name: Publish test results
-        uses: ctrf-io/github-test-reporter@v1
+        uses: dorny/test-reporter@v1
+        if: always()
         with:
-          report-path: './target/surefire-reports/*.xml'   # XML de Surefire
-          github-report: true
-        if: always()   # se ejecuta aunque fallen tests
+          name: Tests (Java ${{ matrix.java }})
+          path: 'target/surefire-reports/*.xml'
+          reporter: java-junit        # parsea XML de Surefire
+          list-suites: 'all'
+          list-tests: 'failed'        # solo muestra fallidos en el summary
 
       # Comentar en el PR el % de cobertura (JaCoCo)
       - name: Comment coverage on PR

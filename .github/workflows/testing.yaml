@@ -9,9 +9,11 @@ on:
     types: [opened, synchronize, reopened]
   workflow_dispatch: {}
 
+# Permisos explícitos para el token GITHUB_TOKEN
 permissions:
   contents: read
-  pull-requests: write   # permite comentar/chequear en PR
+  checks: write          # <-- necesario para publicar check-runs (test results)
+  pull-requests: write   # permite comentar la cobertura en el PR
 
 jobs:
   sonarcloud:
@@ -51,7 +53,7 @@ jobs:
               -DskipTests=false \
               -Dsonar.projectKey=dcastellnieves_my-app \
               -Dsonar.organization=dcastellnieves \
-              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.host.url=https://sonarcloud.io  \
               -Dsonar.login=${SONAR_TOKEN} \
               -Dsonar.qualitygate.wait=true
 
@@ -62,17 +64,17 @@ jobs:
         with:
           name: Tests (Java ${{ matrix.java }})
           path: 'target/surefire-reports/*.xml'
-          reporter: java-junit        # parsea XML de Surefire
+          reporter: java-junit
           list-suites: 'all'
-          list-tests: 'failed'        # solo muestra fallidos en el summary
+          list-tests: 'failed'
 
       # Comentar en el PR el % de cobertura (JaCoCo)
       - name: Comment coverage on PR
         uses: madrapps/jacoco-report@v1.6.1
+        if: github.event_name == 'pull_request'
         with:
           title: 📊 Cobertura de código
           paths: ./target/site/jacoco/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 60   // umbral opcional
+          min-coverage-overall: 60
           update-comment: true
-        if: github.event_name == 'pull_request'

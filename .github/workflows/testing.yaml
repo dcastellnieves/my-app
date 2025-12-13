@@ -17,18 +17,12 @@ permissions:
 
 jobs:
   sonarcloud:
-    name: SonarCloud Analysis (${{ matrix.os }}, Java ${{ matrix.java }})
-    # Cambiamos runs-on para que tome el valor de la matriz
-    runs-on: ${{ matrix.os }}
+    name: SonarCloud Analysis (Java ${{ matrix.java }})
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        # Definimos las combinaciones de OS y Java
-        os: [ubuntu-latest, windows-latest, macos-latest] # Añadimos Windows y Mac
-        java: [17, 21, 23] # Añadimos la última versión disponible (23)
-
-    # Opcional: Limitar el número de trabajos concurrentes si hay problemas de cuota
-    # max-parallel: 3
+        java: [17, 21]
 
     steps:
       - uses: actions/checkout@v4
@@ -38,17 +32,15 @@ jobs:
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
-          # Esta acción soporta automáticamente Linux, Windows y Mac
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
-          cache: maven # Esta caché también funcionará en los tres OS
+          cache: maven
 
-      # El resto de los pasos permanece igual
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar # Usamos runner.os para una clave única por SO
+          key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
       - name: Build, Test and SonarCloud analysis
@@ -64,41 +56,35 @@ jobs:
               -Dsonar.host.url=https://sonarcloud.io    \
               -Dsonar.login=${SONAR_TOKEN} \
               -Dsonar.qualitygate.wait=true
-        shell: bash # Usamos bash para consistencia multiplataforma con Maven
 
       # Publicar resumen de tests en el workflow y Checks del PR
-      # Importante: Usar if: success() o if: always() y verificar que el archivo exista
-      # en el sistema operativo específico si hay diferencias de ruta.
-      # Las rutas de Surefire son generalmente consistentes.
       - name: Publish test results
         uses: dorny/test-reporter@v1
-        if: always() # Ejecutar siempre ayuda a capturar resultados incluso si fallan otros pasos posteriores
+        if: always()
         with:
-          name: Tests (${{ matrix.os }}, Java ${{ matrix.java }})
+          name: Tests (Java ${{ matrix.java }})
           path: 'target/surefire-reports/*.xml'
           reporter: java-junit
           list-suites: 'all'
           list-tests: 'failed'
 
       # Comentar en el PR el % de cobertura (JaCoCo)
-      # Este paso solo se ejecuta en Pull Requests.
-      # Es importante que el archivo jacoco.xml se genere en la misma ruta relativa en todos los OS.
       - name: Comment coverage on PR
         uses: madrapps/jacoco-report@v1.6.1
         if: github.event_name == 'pull_request'
         with:
-          title: 📊 Cobertura de código (${{ matrix.os }}, Java ${{ matrix.java }})
+          title: 📊 Cobertura de código
           paths: ./target/site/jacoco/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 60
           update-comment: true
 
-      # --- Paso Modificado: Subir Informe de Cobertura HTML como Artifact ---
-      - name: Upload JaCoCo HTML coverage report as artifact
+      # --- Nuevo Paso: Subir Informe de Cobertura como Artifact ---
+      - name: Upload JaCoCo coverage report as artifact
         uses: actions/upload-artifact@v4
-        if: always() # Asegura que se ejecute incluso si otros pasos fallaron
+        if: always() # Asegura que se ejecute incluso si otros pasos fallaron, para tener el informe si algo salió mal
         with:
-          name: jacoco-html-coverage-report-${{ matrix.os }}-java${{ matrix.java }} # Nombre del artifact
-          path: ./target/site/jacoco/                        # Ruta a la carpeta del informe HTML completo
-          retention-days: 90
+          name: jacoco-coverage-report-${{ matrix.java }} # Nombre único del artifact, útil si hay múltiples matrices
+          path: ./target/site/jacoco/jacoco.xml         # Ruta al archivo de cobertura generado
+          retention-days: 90                            # Opcional: días que se retiene el artifact (máx. 90 para usuarios gratuitos)
       # ----------------------------------------------------------

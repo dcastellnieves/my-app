@@ -204,13 +204,11 @@
 
     <!-- Sección <plugins> fuera de <pluginManagement> para activar plugins -->
     <plugins>
-        
-        <!-- ACTIVAMOS EL PLUGIN JACOCO AQUÍ Y AGREGAMOS LA VERSIÓN EXPLÍCITAMENTE -->
+        <!-- ACTIVAMOS EL PLUGIN JACOCO AQUÍ -->
         <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <!-- Agregamos la versión explícitamente aquí -->
-            <version>${jacoco.version}</version> 
+            <!-- La versión se heredará de <pluginManagement> -->
             <executions>
                 <execution>
                     <goals>
@@ -223,7 +221,6 @@
                     <phase>verify</phase>
                     <goals>
                         <goal>report</goal>
-                        <goal>html:report</goal> <!-- Genera el informe HTML -->
                     </goals>
                 </execution>
             </executions>
@@ -233,11 +230,3 @@
   </build>
 
 </project>
-
-
-
-
-
-
-
-

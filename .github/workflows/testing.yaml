@@ -86,5 +86,5 @@ jobs:
         with:
           name: jacoco-coverage-report-${{ matrix.java }} # Nombre único del artifact, útil si hay múltiples matrices
           path: ./target/site/jacoco/jacoco.xml         # Ruta al archivo de cobertura generado
-          retention-days: 90                            # Opcional: días que se retiene el artifact (máx. 90 para usuarios gratuitos)
+          retention-days: 2                            # Opcional: días que se retiene el artifact (máx. 90 para usuarios gratuitos)
       # ----------------------------------------------------------

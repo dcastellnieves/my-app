@@ -70,3 +70,8 @@ Para ejecutar los tests del proyecto:
 ```bash
 mvn test
 ```
+
+## Wiki
+
+Consulta la [wiki del proyecto](wiki/Home.md) para ver su estado, estructura y
+las instrucciones de construcción y ejecución.
